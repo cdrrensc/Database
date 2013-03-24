@@ -43,6 +43,8 @@
   numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
   numbersep=10pt,                   % how far the line-numbers are from the code
   numberstyle=\tiny\color{gray}, % the style that is used for the line-numbers
+  morekeywords={REFERENCES},
+  deletekeywords={YEAR},
   rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
   showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
   showstringspaces=false,          % underline spaces within strings only
@@ -58,11 +60,11 @@
 \begin{document}
 \title{Database project - deliverable 1}
 \author{
-	Valentin \bsc{Matter}\\\small{203447}
+	Arthur \bsc{Giroux}\\\small{205443}
 	\and
 	Colla \bsc{Rensch}\\\small{205814}
 	\and
-	Arthur \bsc{Giroux}\\\small{205443}
+	Valentin \bsc{Matter}\\\small{203447}
 }
 \date{March $^{24th}$ 2013} 
 
@@ -78,22 +80,19 @@
 
 \section{Tables creation}
 
-\lstinputlisting[language=SQL]{db.sql}
+\lstinputlisting{db.sql}
 
 \noindent\hrulefill
 
 \section{Remarks}
 
 \begin{itemize}
-	\item exactly one : events -> discipline, events -> games
-	\item 1 athlete comes twice -> 1 athlete, 2 participants
-	\item comment all at least
-	\item country doe not necessarily have a participant
-	\item athlete (why it's useful)
-	\item countries, sports, disciplines, events, games : unique name
-	\item medal - country
-	\item games - number\_of\_countries, number\_of\_athletes, number\_of\_events
-	\item contraintes ?
+	\item Athletes is the entity that stores the information of an athlete who can then participate in multiple sports or games. Which means that if an Athele competes twice he will have only one entry in the ATHLETE table but two in the PARTICIPANTS table.
+	\item Each game should at least have one event otherwise soothing happened during he games. The same applies to sports, a sport must have at least one participant, other wise the sport never took place during any games.
+	\item Countries, sports and disciplines must have a unique name as the opposite would have no sense. For games it is the pair YEAR,TYPE that must be unique.
+	\item Due to problem with their federations some athletes may present themselves without representing a country.
+	\item Some medals could not be associated to a country as some athletes aren't as for the above point.
+	\item The numbers of countries, athletes and events for a given game isn't stored in the GAMES entity as they can be easily computed.
 \end{itemize}
 
 \noindent\hrulefill
