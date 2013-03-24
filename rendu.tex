@@ -92,7 +92,8 @@
 	\item Countries, sports and disciplines must have a unique name as the opposite would have no sense. For games it is the pair YEAR,TYPE that must be unique.
 	\item Due to problem with their federations some athletes may present themselves without representing a country.
 	\item Some medals could not be associated to a country as some athletes aren't as for the above point.
-	\item The numbers of countries, athletes and events for a given game isn't stored in the GAMES entity as they can be easily computed.
+	\item The numbers of countries, athletes and events for a given game isn't stored in the GAMES entity as they can be easily computed using some COUNT query.
+	\item The names of the events, disciplines and games are not stored as they are only the concatenation of information stored in other tables.
 \end{itemize}
 
 \noindent\hrulefill
