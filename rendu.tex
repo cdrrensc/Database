@@ -87,9 +87,9 @@
 \section{Remarks}
 
 \begin{itemize}
-	\item Athletes is the entity that stores the information of an athlete who can then participate in multiple sports or games. Which means that if an Athele competes twice he will have only one entry in the ATHLETE table but two in the PARTICIPANTS table.
-	\item Each game should at least have one event otherwise soothing happened during he games. The same applies to sports, a sport must have at least one participant, other wise the sport never took place during any games.
-	\item Countries, sports and disciplines must have a unique name as the opposite would have no sense. For games it is the pair YEAR,TYPE that must be unique.
+	\item Athletes is the entity that stores the information of an athlete who can then participate in multiple sports or games. Which means that if an Athlete competes twice he will have only one entry in the ATHLETES table but two in the PARTICIPANTS table.
+	\item Each game should at least have one event otherwise nothing happened during he games. The same applies to sports, a sport must have at least one participant, otherwise the sport never took place during any games.
+	\item Countries, sports and disciplines must have a unique name as the opposite would have no sense. For games it is the pair (YEAR,TYPE) that must be unique.
 	\item Due to problem with their federations some athletes may present themselves without representing a country.
 	\item Some medals could not be associated to a country as some athletes aren't as for the above point.
 	\item The numbers of countries, athletes and events for a given game isn't stored in the GAMES entity as they can be easily computed using some COUNT query.
