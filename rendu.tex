@@ -104,7 +104,14 @@
 
 \part*{Deliverable 2}
 
+\section*{Modifications}
+
+We had to slightly modify our model as in forced each athlete to have a binding participant, but we noticed that there is a quite big amount of them that do not and therefor we decided to slightly change our code as to allow athletes to not have a binding participant.
+
 \section*{Data import}
+
+We chose to import the data using Java. We decided that any data that would generate a non-existent foreign key would be dropped was would any inconsistent incomplete data (i.e. medals without color)
+
 
 Data import was made using Java. When a foreign key couldn't be found in the foreign table or when data was incomplete (medals without color, for instance), we dropped the data.
 
@@ -113,7 +120,7 @@ Data import was made using Java. When a foreign key couldn't be found in the for
 \begin{enumerate}[A)]
 	\item Simple query using multiple ANDs
 	\item We have an outer-query which seeks gold medalist in sports that appear in the nested query, which computes all sports that have appeared only once
-	\item
+	\item We retrieve the minimum year in which each country won its first medal using a subquery and then use a simple query to get the place hosting the corresponding games.
 	\item We unite (UNION) two same queries using "Summer" for one and "Winter" for the other and compute the number of medals for each country given the type (Summer or Winter), we then order them despondingly and limit the table to 1
 	\item Simple GROUP BY + HAVING query
 	\item We use two table of participants and two tables for countries and then just use ANDs to make find the athletes that competed for at least two countries
