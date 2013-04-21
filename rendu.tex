@@ -60,7 +60,7 @@
 % DOCUMENT %
 
 \begin{document}
-\title{Database project - deliverable 1}
+\title{Database project - deliverable 2}
 \author{
 	Arthur \bsc{Giroux}\\\small{205443}
 	\and
@@ -68,7 +68,7 @@
 	\and
 	Valentin \bsc{Matter}\\\small{203447}
 }
-\date{March $^{24th}$ 2013} 
+\date{April $21^{\textrm{st}}$ 2013} 
 
 \maketitle
 
@@ -108,9 +108,13 @@
 
 We had to slightly modify our model as we forced each athlete to have a binding participant, but we noticed that there is a quite big amount of them that do not. Therefore, we decided to slightly change our ER-model as to allow athletes to not have a binding participant. No change to the table creation code was needed as it is not possible to represent the "at least" constraint.
 
+\noindent\hrulefill
+
 \section*{Data import}
 
 We chose to import the data using Java. We decided that any data that would generate a non-existent foreign key would be dropped was would any inconsistent incomplete data (i.e. medals without color)
+
+\noindent\hrulefill
 
 \section*{Queries}
 
@@ -244,6 +248,7 @@ WHERE C.CID NOT IN (
 		\end{lstlisting}
 \end{enumerate}
 
+\noindent\hrulefill
 
 \section*{Front-end}
 
@@ -263,5 +268,7 @@ The search page
 \includegraphics[height=210px]{images/capt3.png}
 The result of one of the queries
 \end{center}
+
+\noindent\hrulefill
 
 \end{document}
