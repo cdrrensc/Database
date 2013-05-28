@@ -271,4 +271,19 @@ The result of one of the queries
 
 \noindent\hrulefill
 
+\part*{Deliverable 3}
+
+\begin{lstlisting}
+CREATE VIEW MEDALS_UNIQUE AS (
+  SELECT MIN(M.MID) AS MID, M.CID, M.TYPE, M.EID 
+  FROM MEDALS M
+  WHERE M.TID IS NOT NULL
+  GROUP BY M.TID
+) UNION (
+  SELECT M.MID, M.CID, M.TYPE, M.EID 
+  FROM MEDALS M
+  WHERE M.TID IS NULL
+)
+\end{lstlisting}
+
 \end{document}
