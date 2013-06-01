@@ -2,3 +2,5 @@
 rendu.pdf
 *.log
 *.synctex.gz
+*.out
+*.DS_STORE
