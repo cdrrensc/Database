@@ -65,7 +65,7 @@
 % DOCUMENT %
 
 \begin{document}
-\title{Database project - deliverable 2}
+\title{Database project - deliverable 3}
 \author{
 	Arthur \sc{Giroux}\\\small{205443}
 	\and
@@ -73,14 +73,14 @@
 	\and
 	Valentin \sc{Matter}\\\small{203447}
 }
-\date{April $21^{\textrm{st}}$ 2013} 
+\date{June $2^{\textrm{nd}}$ 2013} 
 
 \maketitle
 
 \tableofcontents
 \vskip 170pt
-Our web front-end is available at http://db.tamere.ch/
-\\\\Access is made using the password : dias2013
+Our web front-end is available at \url{http://db.tamere.ch/}
+\\\\Access is made using the password : \textbf{dias2013}
 
 \part*{Deliverable 1}
 \addcontentsline{toc}{section}{Deliverable 1}
@@ -121,7 +121,7 @@ We had to slightly modify our model as we forced each athlete to have a binding 
 \section*{Data import}
 \addcontentsline{toc}{subsection}{Data import}
 
-We chose to import the data using Java. We decided that any data that would generate a non-existent foreign key would be dropped was would any inconsistent incomplete data (i.e. medals without color)
+We chose to import the data using Java. We decided that any data that would generate a non-existent foreign key would be dropped as would any inconsistent or incomplete data (i.e. medals without color)
 
 \part*{Deliverable 3}
 \addcontentsline{toc}{section}{Deliverable 3}
@@ -147,7 +147,9 @@ CREATE VIEW MEDALS_UNIQUE AS (
 \end{lstlisting}
 \end{enumerate}
 
-\part*{Performance}
+\section*{Performance}
+\addcontentsline{toc}{subsection}{Performance}
+
 After spending a very large amount of time on trying to add indexes that could improve the performance of our queries (we ran them over and over again using average time over 20, 50 or 100 executions and adding pretty much all possible indexes, we had to resign to the fact that adding indexes does not improve our queries. This is due to the fact that MySQL enforces indexes on foreign keys, unique keys and referenced keys so that foreign key checks can be fast and not require a table scan. Indeed the only indexes left would be GAMES TYPE and HOST\_CITY but given the small size of the GAMES table (52) an index would be useless, we then have the MEDALS TYPE and TID, the first is of no use as there is only 3 possible values for TYPE, the second is useless too, as most of the TIDs are NULL rendering an index on it pointless. Finally ATHELETE NAME which could be potentially useful as athlete is our biggest table however it is of no use for our queries.
 Additionally our schema was made in such a way that we use almost all the time either a primary either a foreign key in our SQL statements. 
 
@@ -385,14 +387,14 @@ LIMIT 3
     ) RANKING_GLOBAL
     WHERE RANKING_GLOBAL.GID = MIN_RANKS.GID
   ) RANKS_PER_GAMES, (
-    SELECT @rank:=@rank+1 AS RANK, MEDAL_TABLE.CID 
+    SELECT @rank1:=@rank1+1 AS RANK, MEDAL_TABLE.CID 
     FROM (SELECT M.CID,
         SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
         SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
         SUM(case M.TYPE when 'Bronze' then 1 else 0 end) AS COUNT_BRONZE
     FROM MEDALS_UNIQUE M
     GROUP BY M.CID
-    ORDER BY COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC) MEDAL_TABLE, (SELECT @rank:=0) INIT
+    ORDER BY COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC) MEDAL_TABLE, (SELECT @rank1:=0) INIT
   ) AVERAGE_RANKS, GAMES G, COUNTRIES C
   WHERE RANKS_PER_GAMES.GID = G.GID
   AND G.CID = C.CID
@@ -405,7 +407,7 @@ LIMIT 3
   SELECT G.YEAR, G.TYPE, C.NAME, RANKS_PER_GAMES.GID, AVERAGE_RANKS.RANK - RANKS_PER_GAMES.RANK AS BENEFIT FROM (
     SELECT RANKING_GLOBAL.GID, RANKING_GLOBAL.CID, RANKING_GLOBAL.RANK - MIN_RANKS.RANK + 1 AS RANK FROM (
       SELECT GID, MIN(RANK) AS RANK FROM (
-        SELECT GID, CID, @rankA:=@rankA+1 AS RANK FROM (
+        SELECT GID, CID, @rankC:=@rankC+1 AS RANK FROM (
           SELECT E.GID, M.CID,
             SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
             SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
@@ -415,11 +417,11 @@ LIMIT 3
           AND M.EID = E.EID
           GROUP BY M.CID, E.GID
           ORDER BY E.GID, COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC
-        ) A, (SELECT @rankA:=0) INIT
+        ) A, (SELECT @rankC:=0) INIT
       ) RANKING_GLOBAL
       GROUP BY RANKING_GLOBAL.GID
     ) MIN_RANKS, (
-        SELECT GID, CID, @rankB:=@rankB+1 AS RANK FROM (
+        SELECT GID, CID, @rankD:=@rankD+1 AS RANK FROM (
           SELECT E.GID, M.CID,
             SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
             SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
@@ -429,18 +431,18 @@ LIMIT 3
           AND M.EID = E.EID
           GROUP BY M.CID, E.GID
           ORDER BY E.GID, COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC
-        ) B, (SELECT @rankB:=0) INIT
+        ) B, (SELECT @rankD:=0) INIT
     ) RANKING_GLOBAL
     WHERE RANKING_GLOBAL.GID = MIN_RANKS.GID
   ) RANKS_PER_GAMES, (
-    SELECT @rank:=@rank+1 AS RANK, MEDAL_TABLE.CID 
+    SELECT @rank2:=@rank2+1 AS RANK, MEDAL_TABLE.CID 
     FROM (SELECT M.CID,
         SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
         SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
         SUM(case M.TYPE when 'Bronze' then 1 else 0 end) AS COUNT_BRONZE
     FROM MEDALS_UNIQUE M
     GROUP BY M.CID
-    ORDER BY COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC) MEDAL_TABLE, (SELECT @rank:=0) INIT
+    ORDER BY COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC) MEDAL_TABLE, (SELECT @rank2:=0) INIT
   ) AVERAGE_RANKS, GAMES G, COUNTRIES C
   WHERE RANKS_PER_GAMES.GID = G.GID
   AND G.CID = C.CID
@@ -449,7 +451,7 @@ LIMIT 3
   AND G.TYPE = 'Winter'
   ORDER BY BENEFIT DESC
   LIMIT 1
-)	
+)
 		\end{lstlisting}
 	\item % L
 		Here we simply count the number of medalists per country (that is counting the multiple medals when a team has won) and divide it by the number of unique medals per country (that is only counting one medal when a team has one) therefore giving us the average number of athletes per medal per country.  
@@ -609,9 +611,9 @@ AND A.AID = M2.AID
 AND M2.TID IS NULL
 AND NOT EXISTS ( SELECT M3.MID 
 	FROM MEDALS M3 
-        WHERE M3.AID = A.AID 
-        AND M3.TID IS NULL 
-        AND M3.TYPE = 'Gold')
+	WHERE M3.AID = A.AID 
+	AND M3.TID IS NULL 
+	AND M3.TYPE = 'Gold')
 ORDER BY A.NAME
 		\end{lstlisting}
 	\item % U
