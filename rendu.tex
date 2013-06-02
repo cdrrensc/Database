@@ -4,7 +4,7 @@
 
 \usepackage[utf8]{inputenc}    
 \usepackage[T1]{fontenc}
-\usepackage[francais]{babel}
+\usepackage[english]{babel}
 \usepackage{graphicx}
 \usepackage{layout}
 \usepackage{color}
@@ -26,6 +26,11 @@
 % Supprime l'indentation de la première ligne des paragraphes
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{10pt}
+
+\addto\captionsenglish{% Replace "english" with the language you use
+  \renewcommand{\contentsname}%
+    {Table of contents}%
+}
 
 \definecolor{keywordsColor}{rgb}{0,0.5,0}
 
@@ -62,33 +67,35 @@
 \begin{document}
 \title{Database project - deliverable 2}
 \author{
-	Arthur \bsc{Giroux}\\\small{205443}
+	Arthur \sc{Giroux}\\\small{205443}
 	\and
-	Colla \bsc{Rensch}\\\small{205814}
+	Colla \sc{Rensch}\\\small{205814}
 	\and
-	Valentin \bsc{Matter}\\\small{203447}
+	Valentin \sc{Matter}\\\small{203447}
 }
 \date{April $21^{\textrm{st}}$ 2013} 
 
 \maketitle
 
-\part*{Deliverable 1}
+\tableofcontents
 
-\section{ER model}
+\part*{Deliverable 1}
+\addcontentsline{toc}{section}{Deliverable 1}
+
+\section*{ER model}
+\addcontentsline{toc}{subsection}{ER model}
 
 \begin{center}
 \includegraphics[height=310px]{images/ermodel.jpg}
 \end{center}
 
-\noindent\hrulefill
-
-\section{Tables creation}
+\section*{Tables creation}
+\addcontentsline{toc}{subsection}{Tables creation}
 
 \lstinputlisting{db.sql}
 
-\noindent\hrulefill
-
-\section{Remarks}
+\section*{Remarks}
+\addcontentsline{toc}{subsection}{Remarks}
 
 \begin{itemize}
 	\item Athletes is the entity that stores the information of an athlete who can then participate in multiple sports or games. Which means that if an Athlete competes twice he will have only one entry in the ATHLETES table but two in the PARTICIPANTS table.
@@ -100,24 +107,45 @@
 	\item The names of the events, disciplines and games are not stored as they are only the concatenation of information stored in other tables.
 \end{itemize}
 
-\noindent\hrulefill
-
 \part*{Deliverable 2}
+\addcontentsline{toc}{section}{Deliverable 2}
 
 \section*{Modifications}
+\addcontentsline{toc}{subsection}{Modifications}
 
 We had to slightly modify our model as we forced each athlete to have a binding participant, but we noticed that there is a quite big amount of them that do not. Therefore, we decided to slightly change our ER-model as to allow athletes to not have a binding participant. No change to the table creation code was needed as it is not possible to represent the "at least" constraint.
 
-\noindent\hrulefill
-
 \section*{Data import}
+\addcontentsline{toc}{subsection}{Data import}
 
 We chose to import the data using Java. We decided that any data that would generate a non-existent foreign key would be dropped was would any inconsistent incomplete data (i.e. medals without color)
-\\\\See all queries below
 
-\noindent\hrulefill
+\part*{Deliverable 3}
+\addcontentsline{toc}{section}{Deliverable 3}
 
-\section*{Front-end}
+\section*{Modifications}
+\addcontentsline{toc}{subsection}{Modifications}
+
+\begin{enumerate}
+	\item To allow us a good way to differentiate individuals from teams we added a team ID attribute "TID" to the medals. TID would be NULL is the medal belongs to an individual and would not be NULL if it belonged to a team (all medals of a team have the same TID)
+	\item We encountered a problem when setting up our deleting interface, we didn't use cascades at all. We changed it in a way that now all foreign key cascade on update and delete.
+	\item Another thing we changed (added) is a view called Medals\_Unique (see below). It's a view of our Medals table where we have all the individual medals and one medal per team. Which is very useful when counting medals.
+\begin{lstlisting}
+CREATE VIEW MEDALS_UNIQUE AS (
+  SELECT MIN(M.MID) AS MID, M.CID, M.TYPE, M.EID 
+  FROM MEDALS M
+  WHERE M.TID IS NOT NULL
+  GROUP BY M.TID
+) UNION (
+  SELECT M.MID, M.CID, M.TYPE, M.EID 
+  FROM MEDALS M
+  WHERE M.TID IS NULL
+)
+\end{lstlisting}
+\end{enumerate}
+
+\part*{Front-end}
+\addcontentsline{toc}{section}{Front-end}
 
 Our web front-end is available at \url{http://db.tamere.ch/}. It was made using PHP and MySQL.
 
@@ -136,32 +164,13 @@ The search page
 The result of one of the queries
 \end{center}
 
-\noindent\hrulefill
-
-\part*{Deliverable 3}
-
-\section*{Modifications}
-\begin{enumerate}
-	\item To allow us a good way to differentiate individuals from teams we added a TeamID attribute "TID" to the medals. TID would be NULL is the medal belongs to an individual and would be NOT NULL if it belonged to a team (all medals of a team have the same TID)
-	\item We encountered a problem when setting up our deleting interface, we didn't use cascades at all. We changed it in a way that now all foreign key cascade on update and delete.
-	\item Another thing we changed (added) is a view called Medals\_Unique (see below). It's a view of our Medals table where we have all the individual medals and one medal per team. Which is very useful when counting medals.
-\begin{lstlisting}
-CREATE VIEW MEDALS_UNIQUE AS (
-  SELECT MIN(M.MID) AS MID, M.CID, M.TYPE, M.EID 
-  FROM MEDALS M
-  WHERE M.TID IS NOT NULL
-  GROUP BY M.TID
-) UNION (
-  SELECT M.MID, M.CID, M.TYPE, M.EID 
-  FROM MEDALS M
-  WHERE M.TID IS NULL
-)
-\end{lstlisting}
-\end{enumerate}
-
-
+\begin{center}
+\includegraphics[height=210px]{images/capt4.png}
+The interface to run queries
+\end{center}
 
 \part*{Queries}
+\addcontentsline{toc}{section}{Queries}
 
 \begin{enumerate}[A)]
 	\item 
@@ -292,8 +301,8 @@ WHERE C.CID NOT IN (
 )
 		\end{lstlisting}
 
-	\item 
-		We simply use the sum function in our select clause incrementing the gold/silver/bronze count for each medal belonging to each country for some given games. We simply delete lines 8 and 9 when wanting to compute the table over all olympics.
+	\item % I
+		We simply use the sum function in our select clause incrementing the gold/silver/bronze count for each medal belonging to each country for some given games. We simply delete lines 7 and 8 when wanting to compute the table over all olympics.
 		\begin{lstlisting}
 SELECT C.NAME, IOC.CODE,
 	SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
@@ -307,7 +316,7 @@ GROUP BY M.CID
 ORDER BY COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC	
 
 		\end{lstlisting}
-	\item 
+	\item % J
 		We use php to go through every SID in the SPORTS table and for each one simply grouped by the country and then ordered by their medal count descending and limited the result to 3. In the query below, the '?' would be replaced by each sport's SID.
 		\begin{lstlisting}
 SELECT C.NAME
@@ -320,12 +329,108 @@ GROUP BY M.CID
 ORDER BY COUNT(*) DESC
 LIMIT 3	
 		\end{lstlisting}
-	\item 
-		FOOOOOOOOOCK
+	\item % K
+		The RANKING\_GLOBAL subquery computes the ranking in the medal tables of each game without restarting the position counter (the position in the medal table of the first games start at 1 but the first position of the next games starts at the last position of the previous one). The MIN\_RANKS subquery computes the minimal rank for each game such that we are now able to subtract the minimal rank to have each medal tables of GLOBAL\_RANKING starting at position 1; this is done in the RANKS\_PER\_GAMES subquery. The AVERAGE\_RANKS subquery computes the countries' average rank in the medal table of all games. Finally, we can compute the benefit for each country and each games by subtracting the rankings in AVERAGE\_RANK to the rankings RANKS\_PER\_GAMES and order the results by benefit.\\All this is done for individually for summer and winter. We unite their results with a UNION.
 		\begin{lstlisting}
-
+(
+  SELECT G.YEAR, G.TYPE, C.NAME, RANKS_PER_GAMES.GID, RANKS_PER_GAMES.RANK - AVERAGE_RANKS.RANK AS BENEFIT FROM (
+    SELECT RANKING_GLOBAL.GID, RANKING_GLOBAL.CID, RANKING_GLOBAL.RANK - MIN_RANKS.RANK + 1 AS RANK FROM (
+      SELECT GID, MIN(RANK) AS RANK FROM (
+        SELECT GID, CID, @rankA:=@rankA+1 AS RANK FROM (
+          SELECT E.GID, M.CID,
+            SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
+            SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
+            SUM(case M.TYPE when 'Bronze' then 1 else 0 end) AS COUNT_BRONZE
+          FROM MEDALS_UNIQUE M, EVENTS E
+          WHERE M.CID IS NOT NULL
+          AND M.EID = E.EID
+          GROUP BY M.CID, E.GID
+          ORDER BY E.GID, COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC
+        ) A, (SELECT @rankA:=0) INIT
+      ) RANKING_GLOBAL
+      GROUP BY RANKING_GLOBAL.GID
+    ) MIN_RANKS, (
+        SELECT GID, CID, @rankB:=@rankB+1 AS RANK FROM (
+          SELECT E.GID, M.CID,
+            SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
+            SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
+            SUM(case M.TYPE when 'Bronze' then 1 else 0 end) AS COUNT_BRONZE
+          FROM MEDALS_UNIQUE M, EVENTS E
+          WHERE M.CID IS NOT NULL
+          AND M.EID = E.EID
+          GROUP BY M.CID, E.GID
+          ORDER BY E.GID, COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC
+        ) B, (SELECT @rankB:=0) INIT
+    ) RANKING_GLOBAL
+    WHERE RANKING_GLOBAL.GID = MIN_RANKS.GID
+  ) RANKS_PER_GAMES, (
+    SELECT @rank:=@rank+1 AS RANK, MEDAL_TABLE.CID 
+    FROM (SELECT M.CID,
+        SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
+        SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
+        SUM(case M.TYPE when 'Bronze' then 1 else 0 end) AS COUNT_BRONZE
+    FROM MEDALS_UNIQUE M
+    GROUP BY M.CID
+    ORDER BY COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC) MEDAL_TABLE, (SELECT @rank:=0) INIT
+  ) AVERAGE_RANKS, GAMES G, COUNTRIES C
+  WHERE RANKS_PER_GAMES.GID = G.GID
+  AND G.CID = C.CID
+  AND AVERAGE_RANKS.CID = RANKS_PER_GAMES.CID
+  AND G.CID = AVERAGE_RANKS.CID
+  AND G.TYPE = 'Summer'
+  ORDER BY BENEFIT DESC
+  LIMIT 1
+) UNION (
+  SELECT G.YEAR, G.TYPE, C.NAME, RANKS_PER_GAMES.GID, RANKS_PER_GAMES.RANK - AVERAGE_RANKS.RANK AS BENEFIT FROM (
+    SELECT RANKING_GLOBAL.GID, RANKING_GLOBAL.CID, RANKING_GLOBAL.RANK - MIN_RANKS.RANK + 1 AS RANK FROM (
+      SELECT GID, MIN(RANK) AS RANK FROM (
+        SELECT GID, CID, @rankA:=@rankA+1 AS RANK FROM (
+          SELECT E.GID, M.CID,
+            SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
+            SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
+            SUM(case M.TYPE when 'Bronze' then 1 else 0 end) AS COUNT_BRONZE
+          FROM MEDALS_UNIQUE M, EVENTS E
+          WHERE M.CID IS NOT NULL
+          AND M.EID = E.EID
+          GROUP BY M.CID, E.GID
+          ORDER BY E.GID, COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC
+        ) A, (SELECT @rankA:=0) INIT
+      ) RANKING_GLOBAL
+      GROUP BY RANKING_GLOBAL.GID
+    ) MIN_RANKS, (
+        SELECT GID, CID, @rankB:=@rankB+1 AS RANK FROM (
+          SELECT E.GID, M.CID,
+            SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
+            SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
+            SUM(case M.TYPE when 'Bronze' then 1 else 0 end) AS COUNT_BRONZE
+          FROM MEDALS_UNIQUE M, EVENTS E
+          WHERE M.CID IS NOT NULL
+          AND M.EID = E.EID
+          GROUP BY M.CID, E.GID
+          ORDER BY E.GID, COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC
+        ) B, (SELECT @rankB:=0) INIT
+    ) RANKING_GLOBAL
+    WHERE RANKING_GLOBAL.GID = MIN_RANKS.GID
+  ) RANKS_PER_GAMES, (
+    SELECT @rank:=@rank+1 AS RANK, MEDAL_TABLE.CID 
+    FROM (SELECT M.CID,
+        SUM(case M.TYPE when 'Gold' then 1 else 0 end) AS COUNT_GOLD,
+        SUM(case M.TYPE when 'Silver' then 1 else 0 end) AS COUNT_SILVER,
+        SUM(case M.TYPE when 'Bronze' then 1 else 0 end) AS COUNT_BRONZE
+    FROM MEDALS_UNIQUE M
+    GROUP BY M.CID
+    ORDER BY COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC) MEDAL_TABLE, (SELECT @rank:=0) INIT
+  ) AVERAGE_RANKS, GAMES G, COUNTRIES C
+  WHERE RANKS_PER_GAMES.GID = G.GID
+  AND G.CID = C.CID
+  AND AVERAGE_RANKS.CID = RANKS_PER_GAMES.CID
+  AND G.CID = AVERAGE_RANKS.CID
+  AND G.TYPE = 'Winter'
+  ORDER BY BENEFIT DESC
+  LIMIT 1
+)
 		\end{lstlisting}
-	\item 
+	\item % L
 		Here we simply count the number of medalists per country (that is counting the multiple medals when a team has won) and divide it by the number of unique medals per country (that is only counting one medal when a team has one) therefore giving us the average number of athletes per medal per country.  
 		\begin{lstlisting}
 SELECT C.NAME, MEDALISTS_COUNT.COUNT / MEDALS_COUNT.COUNT AS MEDALISTS_PER_MEDAL 
@@ -344,7 +449,7 @@ AND MEDALISTS_COUNT.CID = C.CID
 ORDER BY MEDALISTS_PER_MEDAL DESC
 LIMIT 10
 		\end{lstlisting}
-	\item 
+	\item % M
 		For this query we just computed all the athletes that whale at least two medals having a different countries.
 		\begin{lstlisting}
 SELECT DISTINCT A.NAME
@@ -354,8 +459,8 @@ AND M1.AID = M2.AID
 AND M1.AID = A.AID
 ORDER BY A.NAME	
 		\end{lstlisting}
-	\item 
-		For this one we used a little trick using a case in a case. We associate gold to 1, silver to 2 and bronze to 3 and take the minimum so that is a country has one multiple medals at their first olympics we will only consider the shinier. Whoever we are now left with 1,2 or 3 the fore there is a second case reverting 1 to gold, 2 to silver and 3 to bronze. For the rest we simply look for the first olympics where each country won it's first medal.
+	\item % N
+		For this one we used a little trick using a case in a case. We associate gold to 1, silver to 2 and bronze to 3 and take the minimum so that is a country has one multiple medals at their first olympics we will only consider the shinier. Whoever we are now left with 1,2 or 3 therefore, there is a second case reverting 1 to gold, 2 to silver and 3 to bronze. For the rest we simply look for the first olympics where each country won it's first medal.
 		\begin{lstlisting}
 SELECT C.NAME, 
 case MIN(case M.TYPE 
@@ -375,7 +480,7 @@ GROUP BY C.NAME
 HAVING G.YEAR = MIN(G.YEAR)
 ORDER BY C.NAME	
 		\end{lstlisting}
-	\item 
+	\item % O
 		Here we look for a country that has won medals in to different events but for the same discipline and then compute the biggest time lapse between those to medals.
 		\begin{lstlisting}
 SELECT D.NAME AS DNAME, C.NAME AS CNAME, MAX(G2.YEAR-G1.YEAR) AS TIME
@@ -394,7 +499,7 @@ AND G1.YEAR < G2.YEAR
 GROUP BY C.NAME
 ORDER BY TIME DESC LIMIT 1
 		\end{lstlisting}
-	\item 
+	\item % P
 		For this query for each event we counted the number of distinct countries that won a medal and then only considered the events were that had a count equal to 1.
 		\begin{lstlisting}
 SELECT D.NAME, G.TYPE, G.YEAR
@@ -411,7 +516,7 @@ AND E.DID = D.DID
 AND E.GID = G.GID
 ORDER BY G.YEAR	
 		\end{lstlisting}
-	\item 
+	\item % Q
 		We used again php to go through our games and for each one we counted the number of medals for each countries and foreach divided it by the total number of medals for those games. In the code below the '?' is replaced with each GID.
 		\begin{lstlisting}
 SELECT C.NAME,
@@ -429,8 +534,8 @@ GROUP BY M.CID
 ORDER BY PERCENT DESC
 LIMIT 1	
 		\end{lstlisting}
-	\item 
-		FUCK .
+	\item % R
+		For each event and each medal type, we compute a "shared coefficient" which is 2 if the medal is shared and 1 otherwise. Then we simply sum the points associated with each medal and divide it by the "shared coeffficient" such that shared medals are worth half the points. 
 		\begin{lstlisting}
 SELECT C.NAME, SUM(
     case M.TYPE 
@@ -460,8 +565,8 @@ GROUP BY C.CID
 ORDER BY SCORE DESC
 LIMIT 10
 		\end{lstlisting}
-	\item 
-		For this one we simply compute all Athletes for which there exists at least one individual medal (TID is NULL) and one team medal (TIS isn't NULL).
+	\item % S
+		For this one we simply compute all athletes for which there exists at least one individual medal (TID is NULL) and one team medal (TID isn't NULL).
 		\begin{lstlisting}
 SELECT DISTINCT A.NAME
 FROM ATHLETES A, MEDALS M1, MEDALS M2
@@ -471,8 +576,8 @@ AND M1.TID IS NOT NULL
 AND M2.TID IS NULL
 ORDER BY A.NAME
 		\end{lstlisting}
-	\item 
-		Here we first look for the athletes that have one a gold medal in a team sport, then that the said athlete also won an individual medal but that there does not exist a medal such that is belongs to the said athlete, is of type Gold and is individual (TID is NULL). Therefore meaning that his individual medals could only be silver or bronze.
+	\item % T
+		Here we first look for the athletes that have a gold medal in a team sport, then that the said athlete also won an individual medal but that there does not exist a medal such that it belongs to the said athlete, is of type Gold and is individual (TID is NULL). Therefore meaning that his individual medals could only be silver or bronze.
 		\begin{lstlisting}
 SELECT DISTINCT A.NAME
 FROM ATHLETES A, MEDALS M1, MEDALS M2
@@ -488,7 +593,7 @@ AND NOT EXISTS ( SELECT M3.MID
         AND M3.TYPE = 'Gold')
 ORDER BY A.NAME
 		\end{lstlisting}
-	\item 
+	\item % U
 		Here we are only looking for gold medals that have been won in consecutive games. To do so we first check that a gold medal was won for the same discipline in the most recent game where that discipline appeared. To do so we take the biggest year that is lower than year of the game of the first medal. We know only have to check is there wasn't another game in between where the discipline didn't appear. (The computation goes quite faster if we don't care if onlympics occurred in-between without the said discipline)
 		\begin{lstlisting}
 SELECT DISTINCT D.NAME, C.NAME AS CNAME, G.TYPE, G.YEAR AS YEAR1, G2.YEAR AS YEAR2, M.TYPE AS MTYPE
@@ -521,7 +626,7 @@ AND E2.EID = M2.EID
 AND G2.GID = E2.GID
 AND M.CID = M2.CID	
 		\end{lstlisting}
-	\item 
+	\item % V
 		We determine in a subquery in our FROM clause the events to consider, that is the events that are appearing for the first time at the olympics. We then simply do the same sum as for query I) to sum the gold, silver and bronze medals.
 		\begin{lstlisting}
 SELECT C.NAME, IOC.CODE,
@@ -548,4 +653,5 @@ ORDER BY COUNT_GOLD DESC, COUNT_SILVER DESC, COUNT_BRONZE DESC
 LIMIT 10
 		\end{lstlisting}
 \end{enumerate}
+
 \end{document}
