@@ -78,6 +78,9 @@
 \maketitle
 
 \tableofcontents
+\vskip 170pt
+Our web front-end is available at http://db.tamere.ch/
+\\\\Access is made using the password : dias2013
 
 \part*{Deliverable 1}
 \addcontentsline{toc}{section}{Deliverable 1}
@@ -123,7 +126,7 @@ We chose to import the data using Java. We decided that any data that would gene
 \part*{Deliverable 3}
 \addcontentsline{toc}{section}{Deliverable 3}
 
-\section*{Modifications}
+\section*{Modifications and Design choices}
 \addcontentsline{toc}{subsection}{Modifications}
 
 \begin{enumerate}
@@ -143,6 +146,10 @@ CREATE VIEW MEDALS_UNIQUE AS (
 )
 \end{lstlisting}
 \end{enumerate}
+
+\part*{Performance}
+After spending a very large amount of time on trying to add indexes that could improve the performance of our queries (we ran them over and over again using average time over 20, 50 or 100 executions and adding pretty much all possible indexes, we had to resign to the fact that adding indexes does not improve our queries.
+
 
 \part*{Front-end}
 \addcontentsline{toc}{section}{Front-end}
@@ -168,6 +175,18 @@ The result of one of the queries
 \includegraphics[height=210px]{images/capt4.png}
 The interface to run queries
 \end{center}
+
+
+
+
+
+
+
+
+
+
+
+
 
 \part*{Queries}
 \addcontentsline{toc}{section}{Queries}
@@ -333,7 +352,7 @@ LIMIT 3
 		The RANKING\_GLOBAL subquery computes the ranking in the medal tables of each game without restarting the position counter (the position in the medal table of the first games start at 1 but the first position of the next games starts at the last position of the previous one). The MIN\_RANKS subquery computes the minimal rank for each game such that we are now able to subtract the minimal rank to have each medal tables of GLOBAL\_RANKING starting at position 1; this is done in the RANKS\_PER\_GAMES subquery. The AVERAGE\_RANKS subquery computes the countries' average rank in the medal table of all games. Finally, we can compute the benefit for each country and each games by subtracting the rankings in AVERAGE\_RANK to the rankings RANKS\_PER\_GAMES and order the results by benefit.\\All this is done for individually for summer and winter. We unite their results with a UNION.
 		\begin{lstlisting}
 (
-  SELECT G.YEAR, G.TYPE, C.NAME, RANKS_PER_GAMES.GID, RANKS_PER_GAMES.RANK - AVERAGE_RANKS.RANK AS BENEFIT FROM (
+  SELECT G.YEAR, G.TYPE, C.NAME, RANKS_PER_GAMES.GID, AVERAGE_RANKS.RANK - RANKS_PER_GAMES.RANK AS BENEFIT FROM (
     SELECT RANKING_GLOBAL.GID, RANKING_GLOBAL.CID, RANKING_GLOBAL.RANK - MIN_RANKS.RANK + 1 AS RANK FROM (
       SELECT GID, MIN(RANK) AS RANK FROM (
         SELECT GID, CID, @rankA:=@rankA+1 AS RANK FROM (
@@ -381,7 +400,7 @@ LIMIT 3
   ORDER BY BENEFIT DESC
   LIMIT 1
 ) UNION (
-  SELECT G.YEAR, G.TYPE, C.NAME, RANKS_PER_GAMES.GID, RANKS_PER_GAMES.RANK - AVERAGE_RANKS.RANK AS BENEFIT FROM (
+  SELECT G.YEAR, G.TYPE, C.NAME, RANKS_PER_GAMES.GID, AVERAGE_RANKS.RANK - RANKS_PER_GAMES.RANK AS BENEFIT FROM (
     SELECT RANKING_GLOBAL.GID, RANKING_GLOBAL.CID, RANKING_GLOBAL.RANK - MIN_RANKS.RANK + 1 AS RANK FROM (
       SELECT GID, MIN(RANK) AS RANK FROM (
         SELECT GID, CID, @rankA:=@rankA+1 AS RANK FROM (
@@ -428,7 +447,7 @@ LIMIT 3
   AND G.TYPE = 'Winter'
   ORDER BY BENEFIT DESC
   LIMIT 1
-)
+)	
 		\end{lstlisting}
 	\item % L
 		Here we simply count the number of medalists per country (that is counting the multiple medals when a team has won) and divide it by the number of unique medals per country (that is only counting one medal when a team has one) therefore giving us the average number of athletes per medal per country.  
