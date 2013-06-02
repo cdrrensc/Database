@@ -148,8 +148,10 @@ CREATE VIEW MEDALS_UNIQUE AS (
 \end{enumerate}
 
 \part*{Performance}
-After spending a very large amount of time on trying to add indexes that could improve the performance of our queries (we ran them over and over again using average time over 20, 50 or 100 executions and adding pretty much all possible indexes, we had to resign to the fact that adding indexes does not improve our queries.
+After spending a very large amount of time on trying to add indexes that could improve the performance of our queries (we ran them over and over again using average time over 20, 50 or 100 executions and adding pretty much all possible indexes, we had to resign to the fact that adding indexes does not improve our queries. This is due to the fact that MySQL enforces indexes on foreign keys, unique keys and referenced keys so that foreign key checks can be fast and not require a table scan. Indeed the only indexes left would be GAMES TYPE and HOST\_CITY but given the small size of the GAMES table (52) an index would be useless, we then have the MEDALS TYPE and TID, the first is of no use as there is only 3 possible values for TYPE, the second is useless too, as most of the TIDs are NULL rendering an index on it pointless. Finally ATHELETE NAME which could be potentially useful as athlete is our biggest table however it is of no use for our queries.
+Additionally our schema was made in such a way that we use almost all the time either a primary either a foreign key in our SQL statements. 
 
+Thus, we were not able to make any query faster by adding an index as every queries are already using indexes.
 
 \part*{Front-end}
 \addcontentsline{toc}{section}{Front-end}
